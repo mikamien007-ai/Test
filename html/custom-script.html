@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sơn Nữ · Lựa chọn lời mở đầu</title>
+<style>
+  :root {
+    --paper-cream: #f5ecd7;
+    --ink-brown: #5a4635;
+    --accent-primary: #b48a60;
+    --accent-secondary: #2a2a2a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 12px;
+    font-family: "BoutiqueBitmap9x9", "Noto Serif SC", "Songti SC", Georgia, serif;
+    color: var(--ink-brown);
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+  }
+
+  .preset-panel {
+    width: 100%;
+    max-width: clamp(280px, 92vw, 520px);
+    margin: 0 auto;
+    padding: 18px 16px 20px;
+    border: 1px solid rgba(90, 70, 53, 0.35);
+    border-radius: 12px;
+    background: radial-gradient(700px 300px at 20% 10%, rgba(199, 162, 123, 0.15), transparent),
+                linear-gradient(180deg, #f8f1e4, #efe6d4);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .panel-header { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(90, 70, 53, 0.35); }
+  .panel-title  { margin: 0 0 8px; font-size: 22px; font-weight: 500; color: var(--accent-primary); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); }
+  .panel-desc   { margin: 0; font-size: 13px; color: #4a3c2b; }
+
+  .option-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .option-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid rgba(90, 70, 53, 0.28);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    user-select: none;
+  }
+  .option-card:hover { transform: translateY(-1px); box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(180, 138, 96, 0.15); }
+  .option-card--active {
+    border-color: var(--accent-primary);
+    background: rgba(255, 255, 255, 0.48);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.06), 0 0 10px rgba(180, 138, 96, 0.25);
+  }
+  .option-card--default { border-style: dashed; border-color: rgba(90, 70, 53, 0.2); background: rgba(255, 255, 255, 0.18); }
+  .option-card--busy { opacity: 0.7; pointer-events: none; }
+
+  .card-body { flex: 1; min-width: 0; }
+  .card-title { margin: 0 0 3px; font-size: 16px; font-weight: 600; color: var(--accent-secondary); }
+  .card-desc  { margin: 0; font-size: 13px; color: #4a3c2b; }
+
+  .card-btn {
+    flex-shrink: 0;
+    min-width: 72px; padding: 6px 18px;
+    border: 1px solid rgba(90, 70, 53, 0.35); border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    color: var(--accent-secondary);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(245, 236, 215, 0.75));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 1px 3px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  }
+  .card-btn:hover { border-color: var(--accent-primary); background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(215, 182, 147, 0.35)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 2px 8px rgba(180, 138, 96, 0.2); }
+  .card-btn:active { transform: scale(0.98); }
+
+  /* --- Công tắc mục Sách Thế Giới --- */
+  .wb-section {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(90, 70, 53, 0.25);
+  }
+  .wb-section-title {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-secondary);
+  }
+  .wb-section-desc {
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: #6b5a45;
+    line-height: 1.4;
+  }
+  .wb-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 1px solid rgba(90, 70, 53, 0.22);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.28);
+  }
+  .wb-entry-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-secondary);
+  }
+  .wb-toggle {
+    flex-shrink: 0;
+    position: relative;
+    width: 48px; height: 28px;
+    border: 1px solid rgba(90, 70, 53, 0.35);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+  .wb-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(230, 218, 200, 0.9));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: transform 0.25s ease;
+  }
+  .wb-toggle--on {
+    background: var(--accent-primary);
+    border-color: rgba(140, 100, 60, 0.5);
+  }
+  .wb-toggle--on::after {
+    transform: translateX(20px);
+  }
+  .wb-toggle--busy {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="preset-panel">
+  <header class="panel-header">
+    <h1 class="panel-title">Sơn Nữ · Lời mở đầu</h1>
+    <p class="panel-desc">Vui lòng chọn khởi đầu bạn muốn trải nghiệm — nhấp vào thẻ để chuyển hướng</p>
+  </header>
+
+  <div class="option-list" id="openingList"></div>
+
+  <!-- Công tắc mục Lorebook -->
+  <section class="wb-section">
+    <h2 class="wb-section-title">Mục Lorebook</h2>
+    <p class="wb-section-desc">Bật sự kiện dịch bệnh, điều này sẽ làm tăng độ khó khi nuôi dưỡng Wendigo, và chiếm khá nhiều token, khuyến nghị nên bật thủ công ở giai đoạn sau</p>
+    <div class="wb-toggle-row">
+      <span class="wb-entry-name">Sự kiện dịch bệnh (DLC)</span>
+      <button class="wb-toggle" id="dlcToggle" title="Bật/tắt mục sự kiện dịch bệnh"></button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* Tên Lời mở đầu, mô tả và sự tương ứng của chúng trong thẻ nhân vật swipe_id mối quan hệ tương ứng */
+const OPENINGS = [
+  { id: 'default', name: 'Lời mở đầu mặc định', desc: 'Mở đầu dạng menu, từ đây chuyển sang các mở đầu khác', swipe: 0 },
+  { id: 'yamame',  name: 'Mở đầu Sơn Nữ',     desc: 'Câu chuyện bắt đầu từ sự xuất hiện của Sơn Nữ',             swipe: 1 },
+  { id: 'wendigo', name: 'Mở đầu Wendigo',   desc: 'Bạn tìm thấy Wendigo đầu tiên, cô ấy vừa mới chào đời', swipe: 2 },
+  { id: 'shrine',  name: 'Mở đầu Đền Thờ',     desc: 'Đền Thờ đã được xây dựng, quản lý Đền Thờ, thờ phụng Sơn Nữ', swipe: 3 },
+  { id: 'ranch',   name: 'Mở đầu Trang Trại con người', desc: 'Sự Thống Trị Bạo Lực đã được thiết lập, ngôi làng biến thành Trang Trại',   swipe: 4 },
+];
+
+/* Mục thế giới thư */
+const DLC_ENTRY_NAME = 'Sự kiện dịch bệnh(DLC)';
+
+const $list = document.getElementById('openingList');
+const $dlcToggle = document.getElementById('dlcToggle');
+
+let currentSwipe = 0;
+let busy = false;
+let dlcEnabled = false;
+let dlcBusy = false;
+let worldbookName = null;
+
+/* ---- Lời mở đầu ---- */
+async function init() {
+  try {
+    const msgs = getChatMessages(0, { include_swipes: true });
+    if (msgs && msgs[0]) {
+      currentSwipe = msgs[0].swipe_id || 0;
+    }
+  } catch (_) {}
+  render();
+  loadDLCState();
+}
+
+function render() {
+  $list.innerHTML = '';
+  OPENINGS.forEach(o => {
+    const card = document.createElement('div');
+    card.className = 'option-card';
+    if (o.swipe === currentSwipe) card.classList.add('option-card--active');
+    if (o.id === 'default') card.classList.add('option-card--default');
+
+    card.innerHTML =
+      '<div class="card-body">' +
+        '<h2 class="card-title">' + o.name + '</h2>' +
+        '<p class="card-desc">' + o.desc + '</p>' +
+      '</div>';
+
+    const btn = document.createElement('button');
+    btn.className = 'card-btn';
+    btn.textContent = o.swipe === currentSwipe ? 'Hiện tại' : 'Chuyển đến';
+    btn.addEventListener('click', e => { e.stopPropagation(); select(o.swipe); });
+    card.appendChild(btn);
+
+    card.addEventListener('click', () => select(o.swipe));
+    $list.appendChild(card);
+  });
+}
+
+async function select(index) {
+  if (busy || index === currentSwipe) return;
+  busy = true;
+
+  document.querySelectorAll('.option-card').forEach(c => c.classList.add('option-card--busy'));
+
+  try {
+    await setChatMessages([{ message_id: 0, swipe_id: index }], { refresh: 'all' });
+    currentSwipe = index;
+    render();
+    toastr.success('Đã chuyển sang「' + OPENINGS.find(o => o.swipe === index).name + '」');
+  } catch (e) {
+    toastr.error('Chuyển đổi thất bại:' + e.message);
+  } finally {
+    busy = false;
+  }
+}
+
+/* ---- Công tắc mục thế giới thư ---- */
+async function loadDLCState() {
+  try {
+    const names = getCharWorldbookNames('current');
+    worldbookName = names?.primary || null;
+    if (!worldbookName) {
+      renderDlcToggle();
+      return;
+    }
+    const entries = await getWorldbook(worldbookName);
+    const entry = entries.find(e => e.name === DLC_ENTRY_NAME);
+    dlcEnabled = entry ? !!entry.enabled : false;
+  } catch (_) {}
+  renderDlcToggle();
+}
+
+function renderDlcToggle() {
+  $dlcToggle.className = 'wb-toggle' +
+    (dlcEnabled ? ' wb-toggle--on' : '') +
+    (dlcBusy    ? ' wb-toggle--busy' : '');
+  $dlcToggle.title = dlcEnabled ? 'Tắt sự kiện dịch bệnh' : 'Bật sự kiện dịch bệnh';
+}
+
+$dlcToggle.addEventListener('click', async () => {
+  if (dlcBusy) return;
+  if (!worldbookName) {
+    toastr.warning('Không tìm thấy thế giới thư liên kết với thẻ nhân vật');
+    return;
+  }
+  dlcBusy = true;
+  renderDlcToggle();
+
+  try {
+    dlcEnabled = !dlcEnabled;
+    await updateWorldbookWith(worldbookName, entries =>
+      entries.map(e =>
+        e.name === DLC_ENTRY_NAME ? { ...e, enabled: dlcEnabled } : e
+      ),
+      { render: 'immediate' },
+    );
+    toastr.success(dlcEnabled ? 'Đã bật sự kiện dịch bệnh' : 'Đã tắt sự kiện dịch bệnh');
+  } catch (e) {
+    dlcEnabled = !dlcEnabled; // Khôi phục
+    toastr.error('Thao tác thất bại:' + e.message);
+  } finally {
+    dlcBusy = false;
+    renderDlcToggle();
+  }
+});
+
+init();
+</script>
+
+</body>
+</html>
